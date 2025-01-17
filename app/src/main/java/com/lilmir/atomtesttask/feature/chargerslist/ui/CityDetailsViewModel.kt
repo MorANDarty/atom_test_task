@@ -31,13 +31,17 @@ class CityDetailsViewModel(
 
     private fun fetchDetails(name: String) {
         viewModelScope.launch {
-            val items = withContext(Dispatchers.IO) {
-                flow<Unit> { delay(1000) }
-                    .firstOrNull().let {
-                        repository.getChargersByCity(name).map { chargerMapper.mapToUi(it) }
-                    }
+            try {
+                val items = withContext(Dispatchers.IO) {
+                    flow<Unit> { delay(1000) }
+                        .firstOrNull().let {
+                            repository.getChargersByCity(name).map { chargerMapper.mapToUi(it) }
+                        }
+                }
+                _screenState.value = CityDetailsContentState(items = items)
+            } catch (err: Exception) {
+                // _screenState.value = CityDetailsErrorState(...)
             }
-            _screenState.value = CityDetailsContentState(items = items)
         }
     }
 

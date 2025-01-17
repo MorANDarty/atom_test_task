@@ -27,13 +27,18 @@ class CityListViewModel(
 
     init {
         viewModelScope.launch {
-            val items = withContext(Dispatchers.IO) {
-                flow<Unit> { delay(1000) }
-                    .firstOrNull().let {
-                        cityRepository.getCityList().map { mapper.mapToUi(it) }
-                    }
+            try {
+
+                val items = withContext(Dispatchers.IO) {
+                    flow<Unit> { delay(1000) }
+                        .firstOrNull().let {
+                            cityRepository.getCityList().map { mapper.mapToUi(it) }
+                        }
+                }
+                _screenState.value = CityListContentState(items)
+            } catch (e: Exception) {
+                //  _screenState.value = CityListErrorState(...)
             }
-            _screenState.value = CityListContentState(items)
         }
     }
 
