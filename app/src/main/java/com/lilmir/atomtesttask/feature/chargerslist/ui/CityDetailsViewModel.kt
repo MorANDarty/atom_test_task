@@ -6,14 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.lilmir.atomtesttask.common.di.Inject
 import com.lilmir.atomtesttask.feature.chargerslist.data.ChargerMapper
 import com.lilmir.atomtesttask.feature.chargerslist.data.CityDetailsRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class CityDetailsViewModel(
     name: String,
@@ -32,12 +28,8 @@ class CityDetailsViewModel(
     private fun fetchDetails(name: String) {
         viewModelScope.launch {
             try {
-                val items = withContext(Dispatchers.IO) {
-                    flow<Unit> { delay(1000) }
-                        .firstOrNull().let {
-                            repository.getChargersByCity(name).map { chargerMapper.mapToUi(it) }
-                        }
-                }
+                delay(1000)
+                val items = repository.getChargersByCity(name).map { chargerMapper.mapToUi(it) }
                 _screenState.value = CityDetailsContentState(items = items)
             } catch (err: Exception) {
                 // _screenState.value = CityDetailsErrorState(...)

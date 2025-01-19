@@ -6,14 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.lilmir.atomtesttask.common.di.Inject
 import com.lilmir.atomtesttask.feature.cities.data.CityMapper
 import com.lilmir.atomtesttask.feature.cities.data.CityRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Suppress("OPT_IN_USAGE")
 class CityListViewModel(
@@ -28,13 +24,8 @@ class CityListViewModel(
     init {
         viewModelScope.launch {
             try {
-
-                val items = withContext(Dispatchers.IO) {
-                    flow<Unit> { delay(1000) }
-                        .firstOrNull().let {
-                            cityRepository.getCityList().map { mapper.mapToUi(it) }
-                        }
-                }
+                delay(1000)
+                val items = cityRepository.getCityList().map { mapper.mapToUi(it) }
                 _screenState.value = CityListContentState(items)
             } catch (e: Exception) {
                 //  _screenState.value = CityListErrorState(...)
